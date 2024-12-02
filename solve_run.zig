@@ -1,6 +1,5 @@
 const std = @import("std");
 
-const options = @import("solution_info");
 const solution = @import("solution").solution;
 
 const Input = enum {
@@ -8,25 +7,11 @@ const Input = enum {
     actual,
 };
 
-pub fn solveRun(input: Input) !void {
-    const input_name = switch (input) {
-        .example => "example",
-        .actual => "actual",
-    };
+pub fn main() !void {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
 
-    const input_data = switch (input) {
-        .example => @embedFile("example_input"),
-        .actual => @embedFile("input"),
-    };
-
-    const result = try solution(std.testing.allocator, input_data);
-    std.debug.print("[Day {}] Part {} ({s} input) => {}\n", .{ options.day, options.part, input_name, result });
-}
-
-test "Example" {
-    try solveRun(.example);
-}
-
-test "Actual" {
-    try solveRun(.actual);
+    const writer = std.io.getStdOut().writer();
+    const result = try solution(allocator, @embedFile("input"));
+    try writer.print("{}\n", .{result});
 }
